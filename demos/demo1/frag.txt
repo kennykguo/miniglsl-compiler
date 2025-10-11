@@ -1,0 +1,11 @@
+
+!!ARBfp1.0
+TEMP temp;
+MUL temp.x, fragment.color.x, fragment.position.x;
+MUL temp.y, fragment.color.y, fragment.position.y;
+MOV temp.z, fragment.color.z;
+MUL temp.w, fragment.color.w, fragment.position.x;
+MUL temp.w, temp.w, fragment.position.y;
+MOV result.color, temp;
+END
+

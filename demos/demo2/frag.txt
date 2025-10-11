@@ -1,0 +1,37 @@
+!!ARBfp1.0
+TEMP fCol, fTex, eyeNorm, coeff, shade, temp;
+PARAM lVec = program.env[1];
+PARAM lHalf = state.light[0].half;
+PARAM red = {1.0, 0.0, 0.0, 1.0};
+PARAM ambient = state.lightmodel.ambient;
+PARAM shininess = state.material.shininess;
+
+MOV fCol, fragment.color;
+MOV fTex, fragment.texcoord[0];
+MOV eyeNorm, fTex;
+
+# Normalize eyeNorm
+DP3 eyeNorm.w, eyeNorm, eyeNorm;
+RSQ eyeNorm.w, eyeNorm.w;
+MUL eyeNorm.xyz, eyeNorm, eyeNorm.w;
+
+# Start with ambient lighting
+MUL shade, ambient, fCol;
+
+# Calculate diffuse coefficient
+DP3 coeff.x, lVec, eyeNorm;
+MAX coeff.x, coeff.x, 0.0;
+
+# Calculate specular coefficient  
+DP3 coeff.y, lHalf, eyeNorm;
+MAX coeff.y, coeff.y, 0.0;
+POW coeff.z, coeff.y, shininess.x;
+
+# Add diffuse contribution
+MAD shade, coeff.x, fCol, shade;
+
+# Add specular contribution
+MAD shade, coeff.z, fCol, shade;
+
+MOV result.color, shade;
+END
