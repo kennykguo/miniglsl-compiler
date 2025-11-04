@@ -1,0 +1,618 @@
+➜  part3 git:(main) ✗ for f in tests/*.glsl; do 
+  echo "=== $(basename $f) ==="
+  ./compiler467 -Tp "$f"
+  echo
+done
+=== test01_basic.glsl ===
+declarations -> epsilon
+
+type -> INT_T
+
+declaration -> type ID ;
+
+declarations -> declarations declaration
+
+statements -> epsilon
+
+variable -> ID
+ 
+expression -> INT_C
+
+statement -> variable = expression ;
+
+statements -> statements statement
+
+scope -> { declarations statements }
+
+program -> scope
+
+
+=== test02_declarations.glsl ===
+declarations -> epsilon
+
+type -> INT_T
+
+declaration -> type ID ;
+
+declarations -> declarations declaration
+
+type -> FLOAT_T
+
+declaration -> type ID ;
+
+declarations -> declarations declaration
+
+type -> BOOL_T
+
+declaration -> type ID ;
+
+declarations -> declarations declaration
+
+type -> VEC_T
+
+declaration -> type ID ;
+
+declarations -> declarations declaration
+
+statements -> epsilon
+
+scope -> { declarations statements }
+
+program -> scope
+
+
+=== test03_initialized.glsl ===
+declarations -> epsilon
+
+type -> INT_T
+
+expression -> INT_C
+
+declaration -> type ID = expression ;
+
+declarations -> declarations declaration
+
+type -> FLOAT_T
+
+expression -> FLOAT_C
+
+declaration -> CONST type ID = expression ;
+
+declarations -> declarations declaration
+
+statements -> epsilon
+
+scope -> { declarations statements }
+
+program -> scope
+
+
+=== test04_precedence.glsl ===
+declarations -> epsilon
+
+type -> INT_T
+
+declaration -> type ID ;
+
+declarations -> declarations declaration
+
+statements -> epsilon
+
+variable -> ID
+ 
+expression -> INT_C
+
+expression -> INT_C
+
+expression -> INT_C
+
+expression -> expression * expression
+
+expression -> expression + expression
+
+statement -> variable = expression ;
+
+statements -> statements statement
+
+variable -> ID
+ 
+expression -> INT_C
+
+expression -> INT_C
+
+expression -> expression + expression
+
+expression -> ( expression )
+
+expression -> INT_C
+
+expression -> expression * expression
+
+statement -> variable = expression ;
+
+statements -> statements statement
+
+scope -> { declarations statements }
+
+program -> scope
+
+
+=== test05_nested_scopes.glsl ===
+declarations -> epsilon
+
+type -> INT_T
+
+declaration -> type ID ;
+
+declarations -> declarations declaration
+
+statements -> epsilon
+
+declarations -> epsilon
+
+type -> FLOAT_T
+
+declaration -> type ID ;
+
+declarations -> declarations declaration
+
+statements -> epsilon
+
+declarations -> epsilon
+
+type -> BOOL_T
+
+declaration -> type ID ;
+
+declarations -> declarations declaration
+
+statements -> epsilon
+
+scope -> { declarations statements }
+
+statement -> scope
+
+statements -> statements statement
+
+scope -> { declarations statements }
+
+statement -> scope
+
+statements -> statements statement
+
+scope -> { declarations statements }
+
+program -> scope
+
+
+=== test06_if_else.glsl ===
+declarations -> epsilon
+
+type -> INT_T
+
+declaration -> type ID ;
+
+declarations -> declarations declaration
+
+statements -> epsilon
+
+variable -> ID
+ 
+expression -> variable
+
+expression -> INT_C
+
+expression -> expression > expression
+
+variable -> ID
+ 
+expression -> INT_C
+
+statement -> variable = expression ;
+
+variable -> ID
+ 
+expression -> INT_C
+
+statement -> variable = expression ;
+
+else_statement -> ELSE statement
+
+statement -> IF ( expression ) statement else_statement
+
+statements -> statements statement
+
+scope -> { declarations statements }
+
+program -> scope
+
+
+=== test07_dangling_else.glsl ===
+declarations -> epsilon
+
+type -> INT_T
+
+declaration -> type ID ;
+
+declarations -> declarations declaration
+
+statements -> epsilon
+
+variable -> ID
+ 
+expression -> variable
+
+expression -> INT_C
+
+expression -> expression > expression
+
+variable -> ID
+ 
+expression -> variable
+
+expression -> INT_C
+
+expression -> expression < expression
+
+variable -> ID
+ 
+expression -> INT_C
+
+statement -> variable = expression ;
+
+variable -> ID
+ 
+expression -> INT_C
+
+statement -> variable = expression ;
+
+else_statement -> ELSE statement
+
+statement -> IF ( expression ) statement else_statement
+
+else_statement -> epsilon
+
+statement -> IF ( expression ) statement else_statement
+
+statements -> statements statement
+
+scope -> { declarations statements }
+
+program -> scope
+
+
+=== test08_while.glsl ===
+declarations -> epsilon
+
+type -> INT_T
+
+declaration -> type ID ;
+
+declarations -> declarations declaration
+
+statements -> epsilon
+
+variable -> ID
+ 
+expression -> variable
+
+expression -> INT_C
+
+expression -> expression < expression
+
+variable -> ID
+ 
+variable -> ID
+ 
+expression -> variable
+
+expression -> INT_C
+
+expression -> expression + expression
+
+statement -> variable = expression ;
+
+statement -> WHILE ( expression ) statement
+
+statements -> statements statement
+
+scope -> { declarations statements }
+
+program -> scope
+
+
+=== test09_constructors.glsl ===
+declarations -> epsilon
+
+type -> VEC_T
+
+declaration -> type ID ;
+
+declarations -> declarations declaration
+
+statements -> epsilon
+
+variable -> ID
+ 
+type -> VEC_T
+
+expression -> FLOAT_C
+
+arguments -> expression
+
+expression -> FLOAT_C
+
+arguments -> arguments, expression
+
+expression -> FLOAT_C
+
+arguments -> arguments, expression
+
+arguments_opt -> arguments
+ 
+constructor -> type ( arguments_opt)
+
+expression -> constructor
+
+statement -> variable = expression ;
+
+statements -> statements statement
+
+scope -> { declarations statements }
+
+program -> scope
+
+
+=== test10_functions.glsl ===
+declarations -> epsilon
+
+type -> VEC_T
+
+declaration -> type ID ;
+
+declarations -> declarations declaration
+
+type -> FLOAT_T
+
+declaration -> type ID ;
+
+declarations -> declarations declaration
+
+statements -> epsilon
+
+variable -> ID
+ 
+type -> VEC_T
+
+expression -> FLOAT_C
+
+arguments -> expression
+
+expression -> FLOAT_C
+
+arguments -> arguments, expression
+
+expression -> FLOAT_C
+
+arguments -> arguments, expression
+
+arguments_opt -> arguments
+ 
+constructor -> type ( arguments_opt)
+
+expression -> constructor
+
+statement -> variable = expression ;
+
+statements -> statements statement
+
+variable -> ID
+ 
+function_name -> FUNC
+
+variable -> ID
+ 
+expression -> variable
+
+arguments -> expression
+
+variable -> ID
+ 
+expression -> variable
+
+arguments -> arguments, expression
+
+arguments_opt -> arguments
+ 
+function -> function_name (arguments_opt) 
+
+expression -> function
+
+statement -> variable = expression ;
+
+statements -> statements statement
+
+variable -> ID
+ 
+function_name -> FUNC
+
+variable -> ID
+ 
+expression -> variable
+
+arguments -> expression
+
+arguments_opt -> arguments
+ 
+function -> function_name (arguments_opt) 
+
+expression -> function
+
+statement -> variable = expression ;
+
+statements -> statements statement
+
+scope -> { declarations statements }
+
+program -> scope
+
+
+=== test11_complex_expr.glsl ===
+declarations -> epsilon
+
+type -> INT_T
+
+declaration -> type ID ;
+
+declarations -> declarations declaration
+
+type -> BOOL_T
+
+declaration -> type ID ;
+
+declarations -> declarations declaration
+
+statements -> epsilon
+
+variable -> ID
+ 
+expression -> INT_C
+
+expression -> INT_C
+
+expression -> INT_C
+
+expression -> expression ^ expression
+
+expression -> expression ^ expression
+
+statement -> variable = expression ;
+
+statements -> statements statement
+
+variable -> ID
+ 
+expression -> INT_C
+
+expression -> - expression
+
+expression -> INT_C
+
+expression -> expression * expression
+
+statement -> variable = expression ;
+
+statements -> statements statement
+
+variable -> ID
+ 
+expression -> TRUE_C
+
+expression -> FALSE_C
+
+expression -> expression AND expression
+
+expression -> TRUE_C
+
+expression -> expression OR expression
+
+statement -> variable = expression ;
+
+statements -> statements statement
+
+variable -> ID
+ 
+variable -> ID
+ 
+expression -> variable
+
+expression -> INT_C
+
+expression -> expression > expression
+
+variable -> ID
+ 
+expression -> variable
+
+expression -> INT_C
+
+expression -> expression < expression
+
+expression -> expression AND expression
+
+statement -> variable = expression ;
+
+statements -> statements statement
+
+scope -> { declarations statements }
+
+program -> scope
+
+
+=== test12_array_subscript.glsl ===
+declarations -> epsilon
+
+type -> VEC_T
+
+declaration -> type ID ;
+
+declarations -> declarations declaration
+
+type -> FLOAT_T
+
+declaration -> type ID ;
+
+declarations -> declarations declaration
+
+statements -> epsilon
+
+variable -> ID
+ 
+variable -> ID [ INT_C ]
+
+expression -> variable
+
+statement -> variable = expression ;
+
+statements -> statements statement
+
+variable -> ID
+ 
+variable -> ID [ INT_C ]
+
+expression -> variable
+
+statement -> variable = expression ;
+
+statements -> statements statement
+
+scope -> { declarations statements }
+
+program -> scope
+
+
+=== test.glsl ===
+declarations -> epsilon
+
+type -> INT_T
+
+declaration -> type ID ;
+
+declarations -> declarations declaration
+
+statements -> epsilon
+
+variable -> ID
+ 
+expression -> INT_C
+
+statement -> variable = expression ;
+
+statements -> statements statement
+
+scope -> { declarations statements }
+
+program -> scope
+
+
+➜  part3 git:(main) ✗ >.

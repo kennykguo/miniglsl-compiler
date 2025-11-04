@@ -1,0 +1,7 @@
+in proj directory, same as makefile
+
+for f in tests/*.glsl; do 
+  echo "=== $(basename $f) ==="
+  ./compiler467 -Tp "$f"
+  echo
+done

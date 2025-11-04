@@ -22,9 +22,9 @@ DIGIT [0-9]
 
 
 %%
-"/*"        {
-              int c1      = 0;
-              int c2      = yyinput();
+"/*" {
+              int c1 = 0;
+              int c2 = yyinput();
               int curline = yyline;
               for(;;) {
                 if (c2 == EOF) {
@@ -39,7 +39,7 @@ DIGIT [0-9]
                 if (c1 == '\n' && c2 != EOF)
                   yyline++;
               }
-            }
+      }
 
 
 "if" { yTRACE(IF); return IF; }
