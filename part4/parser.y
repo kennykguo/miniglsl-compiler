@@ -23,12 +23,6 @@ void yyerror(char* s);
 int yylex();
 extern int yyline;
 
-enum {
-  DP3 = 0, 
-  LIT = 1, 
-  RSQ = 2
-};
-
 %}
 
 %{
@@ -49,7 +43,6 @@ enum {
 %token          BOOL_T
 %token          CONST
 %token          FALSE_C TRUE_C
-%token          FUNC
 %token          IF ELSE
 %token          AND OR NEQ EQ LEQ GEQ
 
@@ -59,6 +52,7 @@ enum {
 %token <as_float> FLOAT_C
 %token <as_int>   INT_C
 %token <as_str>   ID
+%token <as_func> FUNC
 
 %left     OR
 %left     AND
@@ -132,6 +126,7 @@ declaration
         $$ = ast_allocate(DECLARATION_NODE, 1, $2, $3, $5); }
   ;
 
+
 statement
   : variable '=' expression ';'
       { yTRACE("statement -> variable = expression ;\n");
@@ -149,6 +144,7 @@ statement
       { yTRACE("statement -> ; \n");
         $$ = NULL; }
   ;
+
 
 type
   : INT_T
@@ -171,6 +167,7 @@ type
         $$ = ast_allocate(TYPE_NODE, VEC_T, $1); }
   ;
 
+
 expression
   : type '(' arguments_opt ')' %prec '('
       { yTRACE("expression -> type ( arguments_opt ) \n");
@@ -178,14 +175,12 @@ expression
   | FUNC '(' arguments_opt ')' %prec '('
       { yTRACE("expression  -> FUNC ( arguments_opt ) \n");
         $$ = ast_allocate(FUNCTION_NODE, $1, $3); }
-
   | '-' expression %prec UMINUS
       { yTRACE("expression -> - expression \n");
         $$ = ast_allocate(UNARY_EXPR_NODE, '-', $2); }
   | '!' expression %prec '!'
       { yTRACE("expression -> ! expression \n");
         $$ = ast_allocate(UNARY_EXPR_NODE, '!', $2); }
-
   | expression AND expression %prec AND
       { yTRACE("expression  -> expression AND expression \n");
         $$ = ast_allocate(BINARY_EXPR_NODE, AND, $1, $3); }
@@ -225,7 +220,6 @@ expression
   | expression '^' expression %prec '^'
       { yTRACE("expression -> expression ^ expression \n");
         $$ = ast_allocate(BINARY_EXPR_NODE, '^', $1, $3); }
-
   | TRUE_C
       { yTRACE("expression -> TRUE_C \n");
         $$ = ast_allocate(BOOL_LITERAL_NODE, 1); }
@@ -238,7 +232,6 @@ expression
   | FLOAT_C
       { yTRACE("expression -> FLOAT_C \n");
         $$ = ast_allocate(FLOAT_LITERAL_NODE, $1); }
-
   | '(' expression ')'
       { yTRACE("expression  -> ( expression ) \n");
         $$ = $2; }

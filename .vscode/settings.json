@@ -1,6 +1,11 @@
 {
     "files.associations": {
         "stdio.h": "c",
-        "common.h": "c"
+        "common.h": "c",
+        "parser.tab.h": "c",
+        "unordered_map": "c",
+        "__hash_table": "c",
+        "__node_handle": "c",
+        "__tree": "c"
     }
 }

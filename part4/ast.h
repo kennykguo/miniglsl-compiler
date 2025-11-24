@@ -4,6 +4,12 @@
 
 #include <stdarg.h>
 
+enum {
+  DP3 = 0, 
+  LIT = 1, 
+  RSQ = 2
+};
+
 // Dummy node just so everything compiles, create your own node/nodes
 //
 // The code provided below is an example ONLY. You can use/modify it,
@@ -53,6 +59,9 @@ typedef enum {
 struct node_ {
     node_kind kind;
     
+    int result_type; // INT_T, FLOAT_T, etc.
+    int result_vec_size; // 0 for scalars, 0-2 for vec2/3/4
+
     union {
         // binary expression - left op right
         struct {
@@ -87,19 +96,19 @@ struct node_ {
             int array_index; // only valid if is_array == 1
         } variable;
         
-        // function call: func_name(args)
+        // function call - - func_name(args)
         struct {
             int func_id; // DP3=0, LIT=1, RSQ=2
             node *arguments; // ARGUMENTS_NODE
         } function;
         
-        // constructor: type(args)
+        // constructor - - type(args)
         struct {
             node *type; // TYPE_NODE
             node *arguments; // ARGUMENTS_NODE
         } constructor;
         
-        // assignment: var = expr
+        // assignment - - var = expr
         struct {
             node *variable; // VAR_NODE
             node *expr; // expression
@@ -112,7 +121,7 @@ struct node_ {
             node *else_stmt; // statement or NULL
         } if_stmt;
         
-        // scope - { declarations statements }
+        // scope - - { declarations statements }
         struct {
             node *declarations; // DECLARATIONS_NODE
             node *statements; // STATEMENTS_NODE
@@ -128,7 +137,7 @@ struct node_ {
         
         // type
         struct {
-            int type_code; // from parser: INT_T, FLOAT_T, etc.
+            int type_code; // from parser - - INT_T, FLOAT_T, etc.
             int vec_size; // 0 for scalars, 1-3 for vec2/3/4
         } type;
         
