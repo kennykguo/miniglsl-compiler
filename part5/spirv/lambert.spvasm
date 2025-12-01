@@ -1,0 +1,114 @@
+; SPIR-V
+; Version: 1.0
+; Generator: Khronos Glslang Reference Front End; 11
+; Bound: 67
+; Schema: 0
+               OpCapability Shader
+          %1 = OpExtInstImport "GLSL.std.450"
+               OpMemoryModel Logical GLSL450
+               OpEntryPoint Fragment %main "main" %gl_FragCoord %mglsl_Color %mglsl_FragColor %mglsl_TexCoord
+               OpExecutionMode %main OriginLowerLeft
+               OpSource GLSL 450
+               OpName %main "main"
+               OpName %fx "fx"
+               OpName %gl_FragCoord "gl_FragCoord"
+               OpName %fy "fy"
+               OpName %temp "temp"
+               OpName %mglsl_Color "mglsl_Color"
+               OpName %mglsl_FragColor "mglsl_FragColor"
+               OpName %mglsl_TexCoord "mglsl_TexCoord"
+               OpName %env1 "env1"
+               OpName %env2 "env2"
+               OpName %env3 "env3"
+               OpName %mglsl_Light_Half "mglsl_Light_Half"
+               OpName %mglsl_Light_Ambient "mglsl_Light_Ambient"
+               OpName %mglsl_Material_Shininess "mglsl_Material_Shininess"
+               OpDecorate %gl_FragCoord BuiltIn FragCoord
+               OpDecorate %mglsl_Color Location 0
+               OpDecorate %mglsl_FragColor Location 0
+               OpDecorate %mglsl_TexCoord Location 1
+               OpDecorate %env1 Location 2
+               OpDecorate %env2 Location 3
+               OpDecorate %env3 Location 4
+               OpDecorate %mglsl_Light_Half Location 5
+               OpDecorate %mglsl_Light_Ambient Location 6
+               OpDecorate %mglsl_Material_Shininess Location 7
+       %void = OpTypeVoid
+          %3 = OpTypeFunction %void
+      %float = OpTypeFloat 32
+%_ptr_Function_float = OpTypePointer Function %float
+    %v4float = OpTypeVector %float 4
+%_ptr_Input_v4float = OpTypePointer Input %v4float
+%gl_FragCoord = OpVariable %_ptr_Input_v4float Input
+       %uint = OpTypeInt 32 0
+     %uint_0 = OpConstant %uint 0
+%_ptr_Input_float = OpTypePointer Input %float
+  %float_800 = OpConstant %float 800
+     %uint_1 = OpConstant %uint 1
+  %float_600 = OpConstant %float 600
+       %bool = OpTypeBool
+       %true = OpConstantTrue %bool
+%_ptr_Function_v4float = OpTypePointer Function %v4float
+%mglsl_Color = OpVariable %_ptr_Input_v4float Input
+     %uint_2 = OpConstant %uint 2
+     %uint_3 = OpConstant %uint 3
+%_ptr_Output_v4float = OpTypePointer Output %v4float
+%mglsl_FragColor = OpVariable %_ptr_Output_v4float Output
+%mglsl_TexCoord = OpVariable %_ptr_Input_v4float Input
+%_ptr_UniformConstant_v4float = OpTypePointer UniformConstant %v4float
+       %env1 = OpVariable %_ptr_UniformConstant_v4float UniformConstant
+       %env2 = OpVariable %_ptr_UniformConstant_v4float UniformConstant
+       %env3 = OpVariable %_ptr_UniformConstant_v4float UniformConstant
+%mglsl_Light_Half = OpVariable %_ptr_UniformConstant_v4float UniformConstant
+%mglsl_Light_Ambient = OpVariable %_ptr_UniformConstant_v4float UniformConstant
+%mglsl_Material_Shininess = OpVariable %_ptr_UniformConstant_v4float UniformConstant
+       %main = OpFunction %void None %3
+          %5 = OpLabel
+         %fx = OpVariable %_ptr_Function_float Function
+         %fy = OpVariable %_ptr_Function_float Function
+       %temp = OpVariable %_ptr_Function_v4float Function
+         %15 = OpAccessChain %_ptr_Input_float %gl_FragCoord %uint_0
+         %16 = OpLoad %float %15
+         %18 = OpFDiv %float %16 %float_800
+               OpStore %fx %18
+         %21 = OpAccessChain %_ptr_Input_float %gl_FragCoord %uint_1
+         %22 = OpLoad %float %21
+         %24 = OpFDiv %float %22 %float_600
+               OpStore %fy %24
+               OpSelectionMerge %28 None
+               OpBranchConditional %true %27 %54
+         %27 = OpLabel
+         %32 = OpAccessChain %_ptr_Input_float %mglsl_Color %uint_0
+         %33 = OpLoad %float %32
+         %34 = OpLoad %float %fx
+         %35 = OpFMul %float %33 %34
+         %36 = OpAccessChain %_ptr_Function_float %temp %uint_0
+               OpStore %36 %35
+         %37 = OpAccessChain %_ptr_Input_float %mglsl_Color %uint_1
+         %38 = OpLoad %float %37
+         %39 = OpLoad %float %fy
+         %40 = OpFMul %float %38 %39
+         %41 = OpAccessChain %_ptr_Function_float %temp %uint_1
+               OpStore %41 %40
+         %43 = OpAccessChain %_ptr_Input_float %mglsl_Color %uint_2
+         %44 = OpLoad %float %43
+         %45 = OpAccessChain %_ptr_Function_float %temp %uint_2
+               OpStore %45 %44
+         %47 = OpAccessChain %_ptr_Input_float %mglsl_Color %uint_3
+         %48 = OpLoad %float %47
+         %49 = OpLoad %float %fx
+         %50 = OpFMul %float %48 %49
+         %51 = OpLoad %float %fy
+         %52 = OpFMul %float %50 %51
+         %53 = OpAccessChain %_ptr_Function_float %temp %uint_3
+               OpStore %53 %52
+               OpBranch %28
+         %54 = OpLabel
+         %55 = OpLoad %v4float %mglsl_Color
+               OpStore %temp %55
+               OpBranch %28
+         %28 = OpLabel
+         %58 = OpLoad %v4float %temp
+               OpStore %mglsl_FragColor %58
+               OpReturn
+               OpFunctionEnd

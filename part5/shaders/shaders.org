@@ -1,0 +1,282 @@
+#+TITLE: MiniGLSL Fragment Shader Reference (As Implemented)
+#+OPTIONS: toc:2 num:t
+
+This document describes the MiniGLSL fragment shaders in =shaders/= *as they
+actually behave in the current harness*, and what each output PNG should look
+like.
+
+The harness:
+
+- Wraps each MiniGLSL *body* inside a GLSL 1.20 fragment shader with:
+  - =gl_FragColor= as the only writable result
+  - =gl_Color= as the incoming interpolated vertex color
+  - =gl_FragCoord= as the screen-space coordinate
+  - =env1=, =env2=, =env3= as uniforms (some shaders use them)
+- Renders a teapot mesh against a dark background.
+- Uses different base colors in FF vs GLSL mode:
+  - FF: =glColor3f(0.2, 0.7, 1.0)= ? cyan
+  - GLSL path: shaders may override this or ignore it.
+
+Typical commands:
+
+#+BEGIN_SRC sh
+# fixed-function reference
+./shader --mode ff    --png ff.png
+
+# MiniGLSL body via GLSL 1.20 wrapper
+./shader --mode glsl  --frag shaders/flat.frag    --obj assets/teapot.obj --png flat.png
+./shader --mode glsl  --frag shaders/lambert.frag --obj assets/teapot.obj --png lambert.png
+./shader --mode glsl  --frag shaders/phong.frag   --obj assets/teapot.obj --png phong.png
+./shader --mode glsl  --frag shaders/grid.frag    --obj assets/teapot.obj --png grid.png
+./shader --mode glsl  --frag shaders/rings.frag   --obj assets/teapot.obj --png rings.png
+#+END_SRC
+
+* Summary Table
+
+| Image / Shader | Main idea (as used in the lab)          | Actual visual signature                              | Main MiniGLSL features exercised          |
+|----------------+------------------------------------------+------------------------------------------------------+-------------------------------------------|
+| =ff.png=       | Fixed-function baseline                  | Solid cyan teapot on dark background                 | OpenGL FF pipeline sanity check          |
+| =flat.frag=    | Pass-through color                       | Solid *bright blue* teapot                           | Assignment, use of =gl_Color=            |
+| =lambert.frag= | Simple diffuse-style shading             | Olive/golden teapot with subtle lightĞdark variation | Intrinsics (=dp3=, =rsq=), arithmetic    |
+| =phong.frag=   | ÒPhongÓ path, but visually red tint      | Solid warm *red* teapot                              | =dp3=, =rsq=, =lit=, multiple temporaries |
+| =grid.frag=    | Screen-space cross / bands               | Cyan Òplus signÓ (vertical + horizontal bar) on teapot | =gl_FragCoord=, =if/else=, int/float mix |
+| =rings.frag=   | Radial band with =if/else=               | Mostly dark teapot, *only handle and spout* bright red | =gl_FragCoord=, =if/else=, comparisons   |
+
+Below, Òexpected imageÓ describes what *you should see* with the current shaders.
+
+* ff (fixed-function baseline)
+
+** Purpose
+- Serve as a sanity check that:
+  - the mesh loads,
+  - camera and projection matrices are reasonable,
+  - and the OSMesa framebuffer ? PNG path works.
+
+** Behavior
+- No shaders involved; uses OpenGLÕs fixed-function pipeline.
+- Uniform color is taken from =glColor3f(0.2, 0.7, 1.0)=.
+
+** Expected image
+- A cyan teapot (light blue) on a dark bluish/gray background.
+- No patterns, no shading variations.
+
+* flat.frag
+
+** Purpose
+- Baseline MiniGLSL program.
+- ÒDo almost nothingÓ: forward incoming color to =gl_FragColor=.
+
+** Conceptual behavior
+Roughly:
+
+#+BEGIN_SRC glsl
+{
+    vec4 col = gl_Color;
+    gl_FragColor = col;
+}
+#+END_SRC
+
+** Features
+- Declaration and assignment.
+- Reads attribute-like =gl_Color= (predefined, read-only).
+- Writes to =gl_FragColor= directly (no =if=).
+
+** Expected image (=flat.png=)
+- A teapot with a *uniform bright blue* color (different from FFÕs cyan).
+- Background is dark.
+- No visible shading or pattern; every visible fragment of the teapot has the
+  same RGB value.
+
+* lambert.frag
+
+** Purpose
+- Introduce simple Òlighting styleÓ behavior using dot products and normalization.
+- Exercises =dp3= and =rsq= intrinsics and scalarĞvector arithmetic.
+
+** Conceptual behavior (informal)
+Typical pattern:
+
+- Treat =gl_TexCoord= as a per-fragment normal or direction.
+- Normalize it:
+
+#+BEGIN_SRC glsl
+{
+    vec4 n = gl_TexCoord;
+    float len2 = dp3(n, n);
+    float invLen = rsq(len2);
+    n = n * invLen;
+    ...
+}
+#+END_SRC
+
+- Use a uniform light direction from =env1=.
+- Compute a diffuse term with a dot product.
+- Clamp negative values to zero.
+- Scale a base color by this diffuse term and write to =gl_FragColor=.
+
+** Features
+- Intrinsics: =dp3=, =rsq=.
+- Vector ? scalar multiplies.
+- Some conditional behavior (either explicitly or via max-style patterns).
+
+** Expected image (=lambert.png=)
+- The teapot appears *olive/gold*.
+- There is visible lightĞdark variation:
+  - One side is clearly brighter.
+  - The opposite side is darker, but not black.
+- Background remains dark.
+- Compared to =flat.png=:
+  - Same general hue range, but with clear shading across the surface.
+
+* phong.frag
+
+** Purpose
+- Exercise the more complex path involving =lit=, but we accept a simple,
+  visually uniform result.
+- Key idea for the lab: studentsÕ compilers still must implement the full
+  pipeline (dp3, rsq, lit), even though the final color is flat.
+
+** Conceptual behavior (informal)
+One possible shape:
+
+- Compute normal / light / half-vector directions as in a classic Phong setup.
+- Use =lit= to combine diffuse + specular terms into a coefficient vector.
+- Compress that into a final scaling factor.
+- Apply that factor to a *fixed red base* color, e.g.:
+
+#+BEGIN_SRC glsl
+{
+    vec4 base = vec4(1.0, 0.3, 0.3, 1.0);  // warm red
+
+    /* sequence of:
+       - dp3 / rsq for N, L, H
+       - pack into a vec4
+       - call lit(...)
+       - combine outputs
+    */
+    float factor = ...; // result of the lighting math
+
+    gl_FragColor = vec4(base[0]*factor,
+                        base[1]*factor,
+                        base[2]*factor,
+                        base[3]);
+}
+#+END_SRC
+
+In practice, with the current constants, this ends up close to =factor Å 1=.
+
+** Features
+- Uses all the ÒheavyÓ intrinsics: =dp3=, =rsq=, =lit=.
+- Multiple =vec4= and =float= temporaries.
+- Sequences of arithmetic instructions (students must generate non-trivial SSA).
+
+** Expected image (=phong.png=)
+- A *solid warm red* teapot.
+- Background is dark.
+- No obvious specular spot; the highlight is effectively Òbaked intoÓ
+  the constant choice and arithmetic.
+- Distinct from =flat.png= (which is bright blue).
+
+For grading: what matters is that the studentÕs MiniGLSL ? SPIR-V pipeline
+reproduces the *same* red result as the reference SPIR-V shader, not that it
+matches textbook Phong shading.
+
+* rings.frag
+
+** Purpose
+- Demonstrate use of =gl_FragCoord= and explicit control flow (=if/else=).
+- Color depends on radial distance from a chosen center.
+
+** Conceptual behavior (informal)
+Rough shape (MiniGLSL-flavored):
+
+#+BEGIN_SRC glsl
+{
+    // Center near the middle of the 800x600 framebuffer
+    float cx = gl_FragCoord[0] - 400.0;
+    float cy = gl_FragCoord[1] - 300.0;
+    float r2 = cx * cx + cy * cy;
+
+    float inner = ...;  // some radius^2
+    float outer = ...;  // some radius^2
+
+    bool inside = (r2 > inner && r2 < outer);
+
+    if (inside) {
+        gl_FragColor = vec4(1.0, 0.2, 0.2, 1.0);  // bright red band
+    } else {
+        gl_FragColor = vec4(0.05, 0.05, 0.05, 1.0); // almost black
+    }
+}
+#+END_SRC
+
+Because of the exact thresholds chosen, only some parts of the teapot intersect
+that ring in screen space.
+
+** Features
+- =gl_FragCoord[0]/[1]= arithmetic.
+- Boolean expressions with =&&= and comparisons.
+- A real =if/else= controlling =gl_FragColor=.
+
+** Expected image (=rings.png=)
+- Most of the teapot body appears *very dark* (near black).
+- Only the *handle and spout* (and possibly a thin arc on the body edge) are
+  bright red where the ring band intersects the geometry.
+- Background remains dark.
+
+This is still a clear Òtwo-color, branch-basedÓ test, even if you donÕt see
+full concentric rings on the body.
+
+* grid.frag
+
+** Purpose
+- Use =gl_FragCoord= with integer-style arithmetic to create a simple
+  screen-space pattern.
+- Current implementation produces a ÒcrossÓ (plus sign), not a full checker.
+
+** Conceptual behavior (informal)
+Typical pattern:
+
+#+BEGIN_SRC glsl
+{
+    float cell = 32.0;
+    float x = gl_FragCoord[0];
+    float y = gl_FragCoord[1];
+
+    bool inVertical   = ...;  // e.g., near some multiple of cell in x
+    bool inHorizontal = ...;  // e.g., near some multiple of cell in y
+
+    if (inVertical || inHorizontal) {
+        gl_FragColor = vec4(0.0, 1.0, 1.0, 1.0); // bright cyan stripe
+    } else {
+        gl_FragColor = vec4(0.0, 0.1, 0.2, 1.0); // darker blue-ish
+    }
+}
+#+END_SRC
+
+** Features
+- Arithmetic on =gl_FragCoord=.
+- Use of logical OR in conditionals.
+- Different assignments to =gl_FragColor= in =if/else= branches.
+
+** Expected image (=grid.png=)
+- The teapot has a *cyan cross* painted on it:
+  - One vertical bright band.
+  - One horizontal bright band.
+- The regions of the teapot not covered by the cross appear much darker.
+- Pattern is aligned with screen axes.
+
+This is sufficient to test control-flow and =gl_FragCoord= usage; it does not
+currently implement a full checkerboard.
+
+* How to Use This as a Reference
+
+For each shader:
+
+1. Run the MiniGLSL ? SPIR-V compiler you implement and feed the resulting
+   SPIR-V to the harness (SPIR-V mode).
+2. Compare the resulting PNG to:
+   - The reference MiniGLSL?GLSL?PNG produced by =./shader --mode glsl=, and
+   - The descriptions above.
+3. If the images *visually match* the reference images (up to tiny numerical
+   noise), your translation for that shader is functionally correct for the lab.

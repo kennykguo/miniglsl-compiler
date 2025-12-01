@@ -41,8 +41,8 @@ LEXER_OBJ =scanner.o
 PARSER_OBJ=parser.o
 AST_OBJ   =ast.o semantic.o symbol.o
 #CODE_OBJ  =codegen.o  
-OBJs      =compiler467.o globalvars.o $(LEXER_OBJ) \
-           $(PARSER_OBJ) $(AST_OBJ)   
+OBJs = compiler467.o globalvars.o $(LEXER_OBJ) \
+       $(PARSER_OBJ) $(AST_OBJ) codegen.o
 
 ###########################################################################
 #	PHONY rules

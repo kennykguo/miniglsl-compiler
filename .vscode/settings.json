@@ -6,6 +6,8 @@
         "unordered_map": "c",
         "__hash_table": "c",
         "__node_handle": "c",
-        "__tree": "c"
+        "__tree": "c",
+        "semantic.h": "c",
+        "string.h": "c"
     }
 }
