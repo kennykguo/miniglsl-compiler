@@ -1,0 +1,59 @@
+
+# 1. Download STB image library
+curl -o stb_image_write.h https://raw.githubusercontent.com/nothings/stb/master/stb_image_write.h
+
+
+# 2. Create basic vertex shader (GLSL)
+cat > basic.vert << 'EOF'
+#version 450
+
+layout(location = 0) in vec3 inPosition;
+layout(location = 1) in vec3 inNormal;
+layout(location = 2) in vec4 inColor;
+
+layout(location = 0) out vec4 outColor;
+layout(location = 1) out vec4 outTexCoord;
+
+void main() {
+    // simple orthographic-like projection
+    vec3 pos = inPosition * 0.5; // scale down
+    gl_Position = vec4(pos.x, pos.y, -pos.z * 0.5 + 0.5, 1.0);
+    
+    // pass to fragment shader
+    outColor = inColor;
+    outTexCoord = vec4(0.0, 0.0, 0.0, 1.0);
+}
+EOF
+
+# 3. Compile vertex shader to SPIR-V
+glslangValidator -V basic.vert -o spirv/basic.vert.spv
+ls -lh spirv/*.spv | head -10
+echo "✓ Compiled vertex shader"
+
+# 4. Build Vulkan viewer
+g++ -o vulkan_viewer vulkan_viewer.cpp \
+    -lvulkan -lm \
+    -I. \
+    -std=c++11 \
+    -O2
+ls -lh vulkan_viewer
+echo "✓ Built vulkan_viewer"
+
+# 5. Test with your shader!
+# Flat shader (simple passthrough)
+./vulkan_viewer spirv/my_flat.spv assets/teapot.obj flat.png
+
+# Lambert shader (diffuse lighting)
+./vulkan_viewer spirv/my_lambert.spv assets/teapot.obj lambert.png
+
+# Phong shader (specular highlights)
+./vulkan_viewer spirv/my_phong.spv assets/teapot.obj phong.png
+
+# Rings shader (radial pattern)
+./vulkan_viewer spirv/my_rings.spv assets/teapot.obj rings.png
+
+# Grid shader (checkerboard)
+./vulkan_viewer spirv/my_grid.spv assets/teapot.obj grid.png
+
+echo "✓ All shaders rendered!"
+ls -lh *.png

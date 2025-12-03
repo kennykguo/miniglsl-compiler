@@ -1,0 +1,34 @@
+for f in tests/*.glsl; do echo "=== $f ==="; ./compiler467 -Da "$f" 2>&1 | head -20; echo; done
+
+
+# 1. flat.frag (simplest - passthrough)
+./compiler467 < ../tests/shaders/flat.frag > flat.spvasm
+spirv-as flat.spvasm -o flat.spv
+spirv-val flat.spv
+
+# 2. lambert.frag (diffuse lighting)
+./compiler467 < ../tests/shaders/lambert.frag > lambert.spvasm
+spirv-as lambert.spvasm -o lambert.spv
+spirv-val lambert.spv
+
+# 3. phong.frag (specular lighting)
+./compiler467 < ../tests/shaders/phong.frag > phong.spvasm
+spirv-as phong.spvasm -o phong.spv
+spirv-val phong.spv
+
+# 4. rings.frag (if/else with gl_FragCoord)
+./compiler467 < ../tests/shaders/rings.frag > rings.spvasm
+spirv-as rings.spvasm -o rings.spv
+spirv-val rings.spv
+
+# 5. grid.frag (if/else checkerboard)
+./compiler467 < ../tests/shaders/grid.frag > grid.spvasm
+spirv-as grid.spvasm -o grid.spv
+spirv-val grid.spv
+
+
+cp flat.spv ../tests/spirv/my_flat.spv
+cp lambert.spv ../tests/spirv/my_lambert.spv
+cp phong.spv ../tests/spirv/my_phong.spv
+cp rings.spv ../tests/spirv/my_rings.spv
+cp grid.spv ../tests/spirv/my_grid.spv

@@ -1,1 +1,0 @@
-for f in tests/*.glsl; do echo "=== $f ==="; ./compiler467 -Da "$f" 2>&1 | head -20; echo; done
