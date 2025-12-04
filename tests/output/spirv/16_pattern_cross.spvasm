@@ -1,0 +1,232 @@
+; SPIR-V
+; Version: 1.0
+; Generator: MiniGLSL Compiler
+; Bound: 240
+; Schema: 0
+; ===== miniglsl fragment shader prologue =====
+OpCapability Shader
+%ext = OpExtInstImport "GLSL.std.450"
+OpMemoryModel Logical GLSL450
+OpEntryPoint Fragment %main "main" %mglsl_Color %gl_FragCoord %mglsl_FragColor %mglsl_TexCoord
+OpExecutionMode %main OriginUpperLeft
+
+; ---- decorations ----
+OpDecorate %gl_FragCoord BuiltIn FragCoord
+OpDecorate %mglsl_Color Location 0
+OpDecorate %mglsl_FragColor Location 0
+OpDecorate %mglsl_TexCoord Location 1
+OpDecorate %env1 Location 2
+OpDecorate %env2 Location 3
+OpDecorate %env3 Location 4
+OpDecorate %mglsl_Light_Half Location 5
+OpDecorate %mglsl_Light_Ambient Location 6
+OpDecorate %mglsl_Material_Shininess Location 7
+
+; ---- types ----
+%t_void = OpTypeVoid
+%t_fn = OpTypeFunction %t_void
+%t_float = OpTypeFloat 32
+%t_bool = OpTypeBool
+%t_int = OpTypeInt 32 1
+%t_vec2 = OpTypeVector %t_float 2
+%t_vec3 = OpTypeVector %t_float 3
+%t_vec4 = OpTypeVector %t_float 4
+
+; ---- pointer types ----
+%t_ptr_input_vec4 = OpTypePointer Input %t_vec4
+%t_ptr_uniform_vec4 = OpTypePointer UniformConstant %t_vec4
+%t_ptr_output_vec4 = OpTypePointer Output %t_vec4
+%t_ptr_func_float = OpTypePointer Function %t_float
+%t_ptr_func_vec2 = OpTypePointer Function %t_vec2
+%t_ptr_func_vec3 = OpTypePointer Function %t_vec3
+%t_ptr_func_vec4 = OpTypePointer Function %t_vec4
+
+; ---- interface variables ----
+%mglsl_Color = OpVariable %t_ptr_input_vec4 Input
+%gl_FragCoord = OpVariable %t_ptr_input_vec4 Input
+%mglsl_TexCoord = OpVariable %t_ptr_input_vec4 Input
+%mglsl_FragColor = OpVariable %t_ptr_output_vec4 Output
+
+; ---- uniforms ----
+%env1 = OpVariable %t_ptr_uniform_vec4 UniformConstant
+%env2 = OpVariable %t_ptr_uniform_vec4 UniformConstant
+%env3 = OpVariable %t_ptr_uniform_vec4 UniformConstant
+%mglsl_Light_Half = OpVariable %t_ptr_uniform_vec4 UniformConstant
+%mglsl_Light_Ambient = OpVariable %t_ptr_uniform_vec4 UniformConstant
+%mglsl_Material_Shininess = OpVariable %t_ptr_uniform_vec4 UniformConstant
+
+; ---- shared constants ----
+%c_float_0 = OpConstant %t_float 0.0
+%c_float_1 = OpConstant %t_float 1.0
+
+; ---- shader constants ----
+%105 = OpConstant %t_float 800.000000
+%107 = OpConstant %t_float 0.500000
+%111 = OpConstant %t_float 600.000000
+%113 = OpConstant %t_float 0.500000
+%116 = OpConstant %t_float 0.050000
+%120 = OpConstant %t_float 0.050000
+%123 = OpConstant %t_float 1.000000
+%127 = OpConstant %t_float 1.000000
+%131 = OpConstant %t_float 1.000000
+%138 = OpConstant %t_float 0.050000
+%143 = OpConstant %t_float 0.050000
+%146 = OpConstant %t_float 1.000000
+%150 = OpConstant %t_float 1.000000
+%154 = OpConstant %t_float 1.000000
+%160 = OpConstant %t_float 0.000000
+%164 = OpConstant %t_float 0.000000
+%168 = OpConstant %t_float 0.000000
+%174 = OpConstant %t_float 0.000000
+%178 = OpConstant %t_float 0.000000
+%182 = OpConstant %t_float 0.000000
+%188 = OpConstant %t_float 0.050000
+%193 = OpConstant %t_float 0.050000
+%196 = OpConstant %t_float 1.000000
+%200 = OpConstant %t_float 1.000000
+%204 = OpConstant %t_float 1.000000
+%210 = OpConstant %t_float 0.000000
+%214 = OpConstant %t_float 0.000000
+%218 = OpConstant %t_float 0.000000
+%224 = OpConstant %t_float 0.000000
+%228 = OpConstant %t_float 0.000000
+%232 = OpConstant %t_float 0.000000
+%236 = OpConstant %t_float 1.000000
+
+%main = OpFunction %t_void None %t_fn
+%entry = OpLabel
+%100 = OpVariable %t_ptr_func_vec4 Function
+%101 = OpVariable %t_ptr_func_float Function
+%102 = OpVariable %t_ptr_func_float Function
+%104 = OpLoad %t_vec4 %gl_FragCoord
+%103 = OpCompositeExtract %t_float %104 0
+%106 = OpFDiv %t_float %103 %105
+%108 = OpFSub %t_float %106 %107
+OpStore %102 %108
+%110 = OpLoad %t_vec4 %gl_FragCoord
+%109 = OpCompositeExtract %t_float %110 1
+%112 = OpFDiv %t_float %109 %111
+%114 = OpFSub %t_float %112 %113
+OpStore %101 %114
+%115 = OpLoad %t_float %102
+%117 = OpFNegate %t_float %116
+%118 = OpFOrdGreaterThan %t_bool %115 %117
+%119 = OpLoad %t_float %102
+%121 = OpFOrdLessThan %t_bool %119 %120
+%122 = OpLogicalAnd %t_bool %118 %121
+%124 = OpLoad %t_vec4 %100
+%125 = OpCompositeInsert %t_vec4 %123 %124 0
+%126 = OpSelect %t_vec4 %122 %125 %124
+OpStore %100 %126
+%128 = OpLoad %t_vec4 %100
+%129 = OpCompositeInsert %t_vec4 %127 %128 1
+%130 = OpSelect %t_vec4 %122 %129 %128
+OpStore %100 %130
+%132 = OpLoad %t_vec4 %100
+%133 = OpCompositeInsert %t_vec4 %131 %132 2
+%134 = OpSelect %t_vec4 %122 %133 %132
+OpStore %100 %134
+%135 = OpLogicalNot %t_bool %121
+%136 = OpLogicalAnd %t_bool %118 %135
+%137 = OpLoad %t_float %101
+%139 = OpFNegate %t_float %138
+%140 = OpFOrdGreaterThan %t_bool %137 %139
+%141 = OpLogicalAnd %t_bool %136 %140
+%142 = OpLoad %t_float %101
+%144 = OpFOrdLessThan %t_bool %142 %143
+%145 = OpLogicalAnd %t_bool %141 %144
+%147 = OpLoad %t_vec4 %100
+%148 = OpCompositeInsert %t_vec4 %146 %147 0
+%149 = OpSelect %t_vec4 %145 %148 %147
+OpStore %100 %149
+%151 = OpLoad %t_vec4 %100
+%152 = OpCompositeInsert %t_vec4 %150 %151 1
+%153 = OpSelect %t_vec4 %145 %152 %151
+OpStore %100 %153
+%155 = OpLoad %t_vec4 %100
+%156 = OpCompositeInsert %t_vec4 %154 %155 2
+%157 = OpSelect %t_vec4 %145 %156 %155
+OpStore %100 %157
+%158 = OpLogicalNot %t_bool %144
+%159 = OpLogicalAnd %t_bool %141 %158
+%161 = OpLoad %t_vec4 %100
+%162 = OpCompositeInsert %t_vec4 %160 %161 0
+%163 = OpSelect %t_vec4 %159 %162 %161
+OpStore %100 %163
+%165 = OpLoad %t_vec4 %100
+%166 = OpCompositeInsert %t_vec4 %164 %165 1
+%167 = OpSelect %t_vec4 %159 %166 %165
+OpStore %100 %167
+%169 = OpLoad %t_vec4 %100
+%170 = OpCompositeInsert %t_vec4 %168 %169 2
+%171 = OpSelect %t_vec4 %159 %170 %169
+OpStore %100 %171
+%172 = OpLogicalNot %t_bool %140
+%173 = OpLogicalAnd %t_bool %136 %172
+%175 = OpLoad %t_vec4 %100
+%176 = OpCompositeInsert %t_vec4 %174 %175 0
+%177 = OpSelect %t_vec4 %173 %176 %175
+OpStore %100 %177
+%179 = OpLoad %t_vec4 %100
+%180 = OpCompositeInsert %t_vec4 %178 %179 1
+%181 = OpSelect %t_vec4 %173 %180 %179
+OpStore %100 %181
+%183 = OpLoad %t_vec4 %100
+%184 = OpCompositeInsert %t_vec4 %182 %183 2
+%185 = OpSelect %t_vec4 %173 %184 %183
+OpStore %100 %185
+%186 = OpLogicalNot %t_bool %118
+%187 = OpLoad %t_float %101
+%189 = OpFNegate %t_float %188
+%190 = OpFOrdGreaterThan %t_bool %187 %189
+%191 = OpLogicalAnd %t_bool %186 %190
+%192 = OpLoad %t_float %101
+%194 = OpFOrdLessThan %t_bool %192 %193
+%195 = OpLogicalAnd %t_bool %191 %194
+%197 = OpLoad %t_vec4 %100
+%198 = OpCompositeInsert %t_vec4 %196 %197 0
+%199 = OpSelect %t_vec4 %195 %198 %197
+OpStore %100 %199
+%201 = OpLoad %t_vec4 %100
+%202 = OpCompositeInsert %t_vec4 %200 %201 1
+%203 = OpSelect %t_vec4 %195 %202 %201
+OpStore %100 %203
+%205 = OpLoad %t_vec4 %100
+%206 = OpCompositeInsert %t_vec4 %204 %205 2
+%207 = OpSelect %t_vec4 %195 %206 %205
+OpStore %100 %207
+%208 = OpLogicalNot %t_bool %194
+%209 = OpLogicalAnd %t_bool %191 %208
+%211 = OpLoad %t_vec4 %100
+%212 = OpCompositeInsert %t_vec4 %210 %211 0
+%213 = OpSelect %t_vec4 %209 %212 %211
+OpStore %100 %213
+%215 = OpLoad %t_vec4 %100
+%216 = OpCompositeInsert %t_vec4 %214 %215 1
+%217 = OpSelect %t_vec4 %209 %216 %215
+OpStore %100 %217
+%219 = OpLoad %t_vec4 %100
+%220 = OpCompositeInsert %t_vec4 %218 %219 2
+%221 = OpSelect %t_vec4 %209 %220 %219
+OpStore %100 %221
+%222 = OpLogicalNot %t_bool %190
+%223 = OpLogicalAnd %t_bool %186 %222
+%225 = OpLoad %t_vec4 %100
+%226 = OpCompositeInsert %t_vec4 %224 %225 0
+%227 = OpSelect %t_vec4 %223 %226 %225
+OpStore %100 %227
+%229 = OpLoad %t_vec4 %100
+%230 = OpCompositeInsert %t_vec4 %228 %229 1
+%231 = OpSelect %t_vec4 %223 %230 %229
+OpStore %100 %231
+%233 = OpLoad %t_vec4 %100
+%234 = OpCompositeInsert %t_vec4 %232 %233 2
+%235 = OpSelect %t_vec4 %223 %234 %233
+OpStore %100 %235
+%237 = OpLoad %t_vec4 %100
+%238 = OpCompositeInsert %t_vec4 %236 %237 3
+OpStore %100 %238
+%239 = OpLoad %t_vec4 %100
+OpStore %mglsl_FragColor %239
+OpReturn
+OpFunctionEnd
