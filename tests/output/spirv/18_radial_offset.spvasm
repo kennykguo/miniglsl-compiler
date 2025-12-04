@@ -8,7 +8,7 @@ OpCapability Shader
 %ext = OpExtInstImport "GLSL.std.450"
 OpMemoryModel Logical GLSL450
 OpEntryPoint Fragment %main "main" %mglsl_Color %gl_FragCoord %mglsl_FragColor %mglsl_TexCoord
-OpExecutionMode %main OriginUpperLeft
+OpExecutionMode %main OriginLowerLeft
 
 ; ---- decorations ----
 OpDecorate %gl_FragCoord BuiltIn FragCoord
@@ -31,6 +31,9 @@ OpDecorate %mglsl_Material_Shininess Location 7
 %t_vec2 = OpTypeVector %t_float 2
 %t_vec3 = OpTypeVector %t_float 3
 %t_vec4 = OpTypeVector %t_float 4
+%t_bvec2 = OpTypeVector %t_bool 2
+%t_bvec3 = OpTypeVector %t_bool 3
+%t_bvec4 = OpTypeVector %t_bool 4
 
 ; ---- pointer types ----
 %t_ptr_input_vec4 = OpTypePointer Input %t_vec4

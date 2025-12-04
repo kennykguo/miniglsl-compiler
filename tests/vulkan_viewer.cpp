@@ -371,7 +371,7 @@ public:
     
     void create_pipeline(const char* frag_spirv_path) {
         // load shaders
-        auto vertCode = load_spirv("spirv/basic_proper.vert.spv");
+        auto vertCode = load_spirv("spirv/basic.vert.spv");
         auto fragCode = load_spirv(frag_spirv_path);
         
         VkShaderModuleCreateInfo vertModuleInfo = {};
